@@ -74,6 +74,26 @@ $query = $pdo->query("SELECT p.*
 
 $posts = $query->fetchAll(PDO::FETCH_CLASS, Post::class);//important de préciser la class Post::class*/
 
+$postsById = [];
+foreach($posts as $post){
+    $postsById[$post->getId()] = $post;
+    //$ids[] = $post->getId();
+}
+
+//seconde requête
+$categories = $pdo
+                ->query('SELECT c.*, pc.post_id
+                       FROM post_category pc
+                       JOIN category c ON c.id = pc.category_id
+                       WHERE pc.post_id IN (' .implode(',',array_keys($postsById)) .')'
+             )->fetchAll(PDO::FETCH_CLASS, Category::class);
+//liaison entre ls catégories et le tableau d'articles
+//$postsById[getPostId()]
+
+foreach($categories as $category){
+    $postsById[$category->getPostId()]->addCategory($category);
+}
+
 $link = $router->url('category', ['id' => $category->getId(), 'slug' => $category->getSlug()]);
 //dd($link);
 ?>
