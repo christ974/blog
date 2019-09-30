@@ -4,7 +4,8 @@ use App\Connection;
 use App\Model\{Post,Category};
 
 
-$title = "L'article";
+$title = "Article";
+
 
 /**Récupération de l'article correspondant à l'id et au slug */
 //on récup l'id
@@ -32,6 +33,8 @@ if($post->getSlug() !== $slug){//si le slug ne correspond pas
     //redirection
     header('Location: ' . $url);
 }
+
+
 /**Récupération des catégories de l'article correspondant  */
 //nouvelle req préparée, alias pc pour post-category
 $query = $pdo->prepare('
@@ -52,13 +55,13 @@ $categories = $query->fetchAll();
     <p>
         <?= $post->getFormatedContent() ?>
     </p>
+</div>
     <p>
         <h5 class="text-secondary">Categorie(s) de l'article : </h5>
     <?php foreach($categories as $category): ?> 
-        <a href="<?= $router->url('category', ['id'=>$category->getId(), 'slug'=>$category->getSlug()] ) ?>"   class="text-warning"> <?= htmlentities($category->getNames()) . ' - ' ?></a>  
+        <a href="<?= $router->url('category', ['id'=>$category->getId(), 'slug'=>$category->getSlug()] ) ?>"   class="text-warning"> <?= htmlentities($category->getNames()) . '     ' ?></a>  
     <?php endforeach ?> 
     </p>  
     <p>
         <a href="/" class="text-muted">Retour à l'accueil</a>
     </p>
-</div>

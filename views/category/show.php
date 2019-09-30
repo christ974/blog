@@ -2,6 +2,7 @@
 use App\Connection;
 use App\Model\{Category, Post};
 
+
 $id = (int)$params['id'];
 $slug = $params['slug'];
 
@@ -13,7 +14,7 @@ $query->setFetchMode(PDO::FETCH_CLASS, Category::class);
 $category = $query->fetch();
 
 if($category === false){
-    throw new Exception("Cette catégorie n'existe pas.");
+    throw new Exception("Aucune catégorie de correspond a cette Id.");
 }
 
 if($category->getSlug() !== $slug){
@@ -79,7 +80,7 @@ $link = $router->url('category', ['id' => $category->getId(), 'slug' => $categor
 
     <?php
         $l = $link;
-        if($currentPage > 2) $l . '?page=' . ($currentPage - 1);   
+        if($currentPage > 2) $l = $link . '?page=' . ($currentPage - 1);   
     ?>
         <a href="<?= $l ?> "class="btn btn-info" >&laquo; Page précédente</a>
     <?php endif ?>
