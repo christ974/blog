@@ -31,7 +31,7 @@ class Router
         $view = $match['target'];
 
         //dd($match);
-        $params = $match['params'];
+        $params = $match['params'];//on conserve ls params de l'url
         $router = $this;
         ob_start();
         require $this->viewPath . DIRECTORY_SEPARATOR. $view . '.php';

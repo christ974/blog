@@ -1,8 +1,8 @@
 <?php
 
 use App\Connection;
-use App\Model\Post;
-use App\Model\Category;
+use App\Model\{Post,Category};
+
 
 $title = "L'article";
 
@@ -25,7 +25,7 @@ if($post === false){
     throw new Exception("Aucun article correspond à l'Id demandé.");
 }
 
-if($post->getSlug() !== $slug){
+if($post->getSlug() !== $slug){//si le slug ne correspond pas
     $url = $router->url('post', ['slug' => $post->getSlug(), 'id' => $id]);
     //on précise que c'est une redirection permanente
     http_response_code(301);
@@ -54,8 +54,8 @@ $categories = $query->fetchAll();
     </p>
     <p>
         <h5 class="text-secondary">Categorie(s) de l'article : </h5>
-    <?php foreach($categories as $category): ?>
-    <a href="<?= $router->url('category', ['id'=>$category->getId(), 'slug'=>$category->getSlug()] ) ?>" class="text-warning"> <?= htmlentities($category->getNames()) . ' - ' ?></a>  
+    <?php foreach($categories as $category): ?> 
+        <a href="<?= $router->url('category', ['id'=>$category->getId(), 'slug'=>$category->getSlug()] ) ?>"   class="text-warning"> <?= htmlentities($category->getNames()) . ' - ' ?></a>  
     <?php endforeach ?> 
     </p>  
     <p>
