@@ -46,5 +46,15 @@ class Post
         return $this->id;
     }
 
+    public function getCategories(): array
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): void{
+        $this->categories[] = $category;
+        //pas obligatoire
+        $category->setPost($this);
+    }
 
 }
