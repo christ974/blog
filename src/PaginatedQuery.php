@@ -7,39 +7,39 @@ class PaginatedQuery
     //propriétés permettant de mémoriser certaines infos
     private $query;
     private $queryCount;
-    private $classMapping;
     private $pdo;
     private $perPage;
     private $count;
+    private $items;//permet d'éviter de renouveller la dde $posts
 
     public function __construct(
         string $query,
         string $queryCount,
-        string $classMapping,
         ?\PDO $pdo = null,
         int $perPage = 12
         )
     {
        $this->query = $query;
        $this->queryCount = $queryCount;
-       $this->classMapping = $classMapping;
        $this->pdo = $pdo ?: Connection::getPDO();
        $this->perPage = $perPage; 
     }
 
-    public function getItems(): array
+    public function getItems(string $classMapping): array
     {
+       if($this->items === null){
         $currentPage = $this->getCurrentPage();
         $pages = $this->getPages();
         if($currentPage > $pages){
-            throw new Exception('Page inexistante');
+            throw new \Exception('Page inexistante');
         }
         $offet = $this->perPage * ($currentPage -1);
-        return $this->pdo->query(
+        $this->items = $this->pdo->query(
             $this->query .
             " LIMIT {$this->perPage} OFFSET $offet")
-            ->fetchAll(PDO::FETCH_CLASS, $this->classMapping);//on précise la class
-
+            ->fetchAll(PDO::FETCH_CLASS, $classMapping);//on précise la class
+       }
+       return $this->items;
     }
 
     public function previousLink(string $link): ?string
