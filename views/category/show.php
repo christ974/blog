@@ -2,20 +2,28 @@
 use App\Connection;
 use App\Model\{Category, Post};
 use App\PaginatedQuery;
+use App\Table\CategoryTable;
+use App\Table\PostTable;
 
 $id = (int)$params['id'];
 $slug = $params['slug'];
 
 $pdo = Connection::getPDO();
+/*
+Méthode find de CategoryTable
 $query = $pdo->prepare('SELECT * FROM category WHERE id = :id');
 $query->execute(['id' => $id]);
 $query->setFetchMode(PDO::FETCH_CLASS, Category::class);
-/**@var Post|false */
-$category = $query->fetch();
+*@var Post|false *
+$category = $query->fetch();*/
 
-if($category === false){
+$categoryTable = new CategoryTable($pdo);
+$category = $categoryTable->find($id);
+
+/* renvoyer ds la class NotFoundExcetion
+if($category === null){
     throw new Exception("Aucune catégorie de correspond a cette Id.");
-}
+}*/
 
 if($category->getSlug() !== $slug){
     $url = $router->url('category', ['slug' => $category->getSlug(), 'id' => $id]);
@@ -28,7 +36,7 @@ if($category->getSlug() !== $slug){
 $title = "Catégorie : {$category->getNames()}";
 //dd($category);
 
-$paginatedQuery = new PaginatedQuery(
+/*$paginatedQuery = new PaginatedQuery(
     "SELECT p.* 
         FROM post p
         JOIN post_category pc ON pc.post_id = p.id
@@ -37,42 +45,9 @@ $paginatedQuery = new PaginatedQuery(
     ",
     "SELECT COUNT(category_id) FROM post_category WHERE category_id = {$category->getId()}"
 );
-/**@var Post[] */
+**@var Post[] *
 $posts = $paginatedQuery->getItems(Post::class);
-//dd($posts);
-/*TOUT CE CODE A ETE INTRODUIT DS LA CLASSE PAGINATEDQUERY!!!*/
-/*récupération de la page courante
-$page = $_GET['page'] ?? 1;
-if(!filter_var($page, FILTER_VALIDATE_INT))
-{
-    throw new Exception('Numéro de page invalide');
-}
-$currentPage = (int)$page;
 
-if($currentPage <= 0){
-    throw new Exception('Numéro de page invalide');
-}*/
-
-/**récupération des noms d'articles correspondant à cette catégorie */
-/*$count = (int) $pdo
--> query('SELECT COUNT(category_id) FROM post_category WHERE category_id =' . $category->getId())
-->fetch(PDO::FETCH_NUM)[0];
-
-$perPage = 12;
-$pages = ceil($count / $perPage);
-if($currentPage > $pages){
-    throw new Exception('Page inexistante');
-}
-$offet = $perPage * ($currentPage -1);
-$query = $pdo->query("SELECT p.* 
-                      FROM post p
-                      JOIN post_category pc ON pc.post_id = p.id
-                      WHERE pc.category_id = {$category->getId()}
-                      ORDER BY create_at DESC 
-                      LIMIT $perPage OFFSET $offet
-                      ");
-
-$posts = $query->fetchAll(PDO::FETCH_CLASS, Post::class);//important de préciser la class Post::class*/
 
 $postsById = [];
 foreach($posts as $post){
@@ -87,13 +62,12 @@ $categories = $pdo
                        JOIN category c ON c.id = pc.category_id
                        WHERE pc.post_id IN (' .implode(',',array_keys($postsById)) .')'
              )->fetchAll(PDO::FETCH_CLASS, Category::class);
-//liaison entre ls catégories et le tableau d'articles
-//$postsById[getPostId()]
+
 
 foreach($categories as $category){
     $postsById[$category->getPostId()]->addCategory($category);
-}
-
+}*/
+[$posts, $paginatedQuery] = (new PostTable($pdo))->findPaginatedForCategory($category->getId());
 $link = $router->url('category', ['id' => $category->getId(), 'slug' => $category->getSlug()]);
 //dd($link);
 ?>

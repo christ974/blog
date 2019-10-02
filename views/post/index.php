@@ -1,17 +1,16 @@
 <?php
-use App\Helpers\Text;
-use App\Model\{Post, Category};
+
 use App\Connection;
-use App\PaginatedQuery;
+use App\Table\PostTable;
 
 $title = 'Mon blog';
 
 $pdo = Connection::getPDO();
 
+/*Utilisation de la class PostTable, f° findPaginated()
 $paginatedQuery = new PaginatedQuery(
     "SELECT * FROM post ORDER BY create_at DESC",
     "SELECT COUNT(id) FROM post"
-    
 );
 $posts = $paginatedQuery->getItems(Post::class);
 
@@ -34,7 +33,14 @@ $categories = $pdo
 
 foreach($categories as $category){
     $postsById[$category->getPostId()]->addCategory($category);
-}
+}*/
+
+$table = new PostTable($pdo);
+/*utilisationde la f° list pr simplifier
+$var = $table->findPaginated();
+$posts = $var[0];
+$pagination = $var[1];*/
+list($posts, $pagination) =  $table->findPaginated();
 
 $link =$router->url('accueil');
 ?>
@@ -49,7 +55,7 @@ $link =$router->url('accueil');
 </div>
 
 <div class="d-flex justify-content-between my-4">
-    <?= $paginatedQuery->previousLink($link) ?>
-   <?= $paginatedQuery->nextLink($link) ?>
+    <?= $pagination->previousLink($link) ?>
+   <?= $pagination->nextLink($link) ?>
 </div>
 
