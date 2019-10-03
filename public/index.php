@@ -36,5 +36,9 @@ $router = new App\Router(dirname(__DIR__) . '/views');
 $router->get('/', '/post/index', 'accueil');
 $router->get('/blog/category/[*:slug]-[i:id]', '/category/show','category');
 $router->get('/blog/[*:slug]-[i:id]', 'post/show','post');
+$router->get('/admin', 'admin/post/index', 'admin_posts');
+$router->get('/admin/post/[i:id]','admin/post/edit','admin_post');
+$router->post('/admin/post/[i:id]/delete','admin/post/delete','admin_post_delete');
+$router->get('/admin/post/new','admin/post/new','admin_new');
 $router->run();
 

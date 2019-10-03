@@ -8,8 +8,29 @@ use App\Model\Post;
 use App\Model\Category;
 use App\Table\CategoryTable;
 
-class PostTable extends Table
+final class PostTable extends Table
 {
+    //protected $table = 'post';
+    //protected $class = Post::class;
+
+    public function delete($id): bool
+    {
+        $query = $this->pdo->prepare("DELETE FROM post WHERE id = ?");
+        return $query->execute(['id']);
+    }
+
+    public function find ($id)
+    {
+        $query = $this->pdo->prepare('SELECT * FROM post WHERE id = :id');
+        $query->execute(['id' => $id]);
+        $query->setFetchMode(PDO::FETCH_CLASS, Post::class);
+        
+        $result = $query->fetch();
+        if($result === false){
+            throw new NotFoundException('post',$id);
+        }
+        return $result;
+    }
     
 public function findPaginated()
 {

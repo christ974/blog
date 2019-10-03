@@ -19,6 +19,10 @@ class Router
         $this->router->map('GET', $url, $view, $name);
     }
 
+    public function post(string $url, string $view, ?string $name = null){
+        $this->router->map('POST', $url, $view, $name);
+    }
+
     public function url(string $name, array $params =[])
     {
         return $this->router->generate($name, $params);

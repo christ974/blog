@@ -2,10 +2,10 @@
 
 use App\Connection;
 use App\Model\{Post,Category};
-
+use App\Table\CategoryTable;
+use App\Table\PostTable;
 
 $title = "Article";
-
 
 /**Récupération de l'article correspondant à l'id et au slug */
 //on récup l'id
@@ -15,16 +15,18 @@ $slug = $params['slug'];
 //dd($params);
 //connection
 $pdo = Connection::getPDO();
+$post = (new PostTable($pdo))->find($id);
+(new CategoryTable($pdo))->hydratePosts([$post]);
 //req préparer pr récupérer 1 id
-$query = $pdo->prepare('SELECT * FROM post WHERE id = :id');
+/*$query = $pdo->prepare('SELECT * FROM post WHERE id = :id');
 $query->execute(['id' => $id]);
 $query->setFetchMode(PDO::FETCH_CLASS, Post::class);
-/**@var Post|false */
+/**@var Post|false 
 $post = $query->fetch();
 
 if($post === false){
     throw new Exception("Aucun article correspond à l'Id demandé.");
-}
+}*/
 
 if($post->getSlug() !== $slug){//si le slug ne correspond pas
     $url = $router->url('post', ['slug' => $post->getSlug(), 'id' => $id]);
@@ -35,7 +37,7 @@ if($post->getSlug() !== $slug){//si le slug ne correspond pas
 }
 
 
-/**Récupération des catégories de l'article correspondant  */
+/**Récupération des catégories de l'article correspondant  
 //nouvelle req préparée, alias pc pour post-category
 $query = $pdo->prepare('
 SELECT c.id, c.slug, c.name 
@@ -45,7 +47,7 @@ WHERE pc.post_id = :id ');
 $query->execute(['id' => $post->getId()]);
 $query->setFetchMode(PDO::FETCH_CLASS, Category::class);
 $categories = $query->fetchAll();
-//dd($categories);
+//dd($categories);*/
 
 ?>
 <h1><?= htmlentities($post->getName()) ?></h1>
@@ -56,12 +58,13 @@ $categories = $query->fetchAll();
         <?= $post->getFormatedContent() ?>
     </p>
 </div>
-    <p>
+
+    
         <h5 class="text-secondary">Categorie(s) de l'article : </h5>
-    <?php foreach($categories as $category): ?> 
+    <?php foreach($post->getCategories() as $category): ?> 
         <a href="<?= $router->url('category', ['id'=>$category->getId(), 'slug'=>$category->getSlug()] ) ?>"   class="text-warning"> <?= htmlentities($category->getNames()) . '     ' ?></a>  
     <?php endforeach ?> 
-    </p>  
+   
     <p>
         <a href="/" class="text-muted">Retour à l'accueil</a>
     </p>

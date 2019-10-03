@@ -9,7 +9,9 @@
 </head>
 <body class="d-flex flex-column h-100" >
     <nav class="navbar navbar-expand-lg navbar-dark bg-info">
-        <a href="" class="navbar-brand">Mon blog</a>
+        <a href="/" class="navbar-brand">Mon blog</a>
+        <a href="/admin" class="navbar-brand">Administration</a>
+        
     </nav>
 
     <div class="container mt-4">

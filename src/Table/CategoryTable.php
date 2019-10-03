@@ -4,8 +4,10 @@ use \PDO;
 use App\Model\Category;
 use App\Table\Exception\NotFoundException;
 
-class CategoryTable extends Table
+final class CategoryTable extends Table
 {
+    //protected $table = 'category';
+    //protected $class = Category::class;
     public function find ($id)
     {
         $query = $this->pdo->prepare('SELECT * FROM category WHERE id = :id');
